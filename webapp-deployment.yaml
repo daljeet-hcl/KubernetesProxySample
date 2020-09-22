@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mynginx
+  labels:
+    app: mynginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mynginx
+  template:
+    metadata:
+      labels:
+        app: mynginx
+    spec:
+      containers:
+      - name: main-app
+        image: daljeethcl/webapp:local
+        imagePullPolicy: Always
+      - name: proxy
+        image: alpine/socat:latest
+        imagePullPolicy: Always
+        args: ["tcp-listen:82,fork,reuseaddr", "tcp-connect:127.0.0.1:5000"]
+        ports:
+        - containerPort: 82
